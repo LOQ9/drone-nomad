@@ -2,6 +2,7 @@ package main
 
 import (
 	"drone-nomad/nomad"
+	"fmt"
 
 	"github.com/drone/envsubst"
 )
@@ -54,11 +55,22 @@ type (
 func (p Plugin) Exec() error {
 
 	// Connect to Nomad
-	nomad.New(&nomad.Client{
+	nomad, err := nomad.New(&nomad.Client{
 		URL: p.Config.Address,
 	})
 
+	if err != nil {
+		return err
+	}
+
 	// Parse template
+	nomadJob, err := nomad.ParseTemplate(p.Config.Template)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(nomadJob)
 
 	// Perform substitions
 

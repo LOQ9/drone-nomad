@@ -15,10 +15,10 @@ func (d *Driver) ParseTemplate(jobHCL string) (*api.Job, error) {
 	return job, nil
 }
 
-// StartJob starts a job task on the nomad cluster
-func (d *Driver) StartJob(job *api.Job) error {
+// RegisterJob starts a job task on the nomad cluster
+func (d *Driver) RegisterJob(job *api.Job) (*api.JobRegisterResponse, error) {
 
 	// Register the task
-	_, _, err := d.client.Jobs().Register(job, nil)
-	return err
+	res, _, err := d.client.Jobs().Register(job, nil)
+	return res, err
 }

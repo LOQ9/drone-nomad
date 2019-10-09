@@ -3,6 +3,7 @@ package main
 import (
 	"drone-nomad/nomad"
 	"fmt"
+	"io/ioutil"
 
 	"github.com/drone/envsubst"
 )
@@ -63,18 +64,30 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	// Read Template File
+	nomadTemplateFile, err := ioutil.ReadFile(p.Config.Template)
+	if err != nil {
+		return err
+	}
+
 	// Parse template
-	nomadJob, err := nomad.ParseTemplate(p.Config.Template)
+	nomadTemplate, err := nomad.ParseTemplate(string(nomadTemplateFile))
 
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(nomadJob)
-
 	// Perform substitions
 
 	// Launch deployment
+	nomadJob, err := nomad.RegisterJob(nomadTemplate)
+
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	fmt.Printf("%+v\n", nomadJob)
 
 	return nil
 }

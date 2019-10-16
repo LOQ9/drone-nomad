@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	version = "0.0.0"
+	version = "0.1.0"
 	build   = "0"
 )
 
@@ -20,6 +20,11 @@ func main() {
 	app.Action = run
 	app.Version = fmt.Sprintf("%s+%s", version, build)
 	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:   "repo",
+			Usage:  "docker repository",
+			EnvVar: "PLUGIN_REPO",
+		},
 		cli.StringFlag{
 			Name:   "addr",
 			Usage:  "nomad addr",

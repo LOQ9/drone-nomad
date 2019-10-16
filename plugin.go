@@ -4,6 +4,7 @@ import (
 	"drone-nomad/nomad"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/drone/envsubst"
 )
@@ -67,31 +68,51 @@ func (p Plugin) Exec() error {
 	// Read Template File
 	nomadTemplateFile, err := ioutil.ReadFile(p.Config.Template)
 	if err != nil {
-		return err
+		return fmt.Errorf("Could not read nomad template file")
 	}
 
+	for _, pair := range os.Environ() {
+		fmt.Println(pair)
+	}
+
+	// Perform substitions
+	nomadTemplateSubst, err := envsubst.EvalEnv(
+		string(nomadTemplateFile),
+	)
+
 	// Parse template
-	nomadTemplate, err := nomad.ParseTemplate(string(nomadTemplateFile))
+	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
 
 	if err != nil {
 		return err
 	}
 
-	// Perform substitions
+	// Plan deployment
+	_, err = nomad.PlanJob(nomadTemplate)
+
+	if err != nil {
+		return err
+	}
 
 	// Launch deployment
 	nomadJob, err := nomad.RegisterJob(nomadTemplate)
 
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
-	fmt.Printf("%+v\n", nomadJob)
+	if len(nomadJob.Warnings) > 0 {
+		fmt.Printf("Nomad job deployed with %d warning(s)\n", len(nomadJob.Warnings))
+		fmt.Printf("%s\n", nomadJob.Warnings)
+	} else {
+		fmt.Printf("Nomad job deployed successfuly!\n")
+	}
 
 	return nil
 }
 
+// replaceEnv env changes vars from template
+/*
 func (p Plugin) replaceEnv(template string) (string, error) {
 	names := map[string]bool{}
 
@@ -106,3 +127,4 @@ func (p Plugin) replaceEnv(template string) (string, error) {
 
 	return template, nil
 }
+*/

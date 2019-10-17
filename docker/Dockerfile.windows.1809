@@ -1,0 +1,10 @@
+# escape=`
+FROM plugins/base:windows-1809
+
+LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
+  org.label-schema.name="Drone Nomad" \
+  org.label-schema.vendor="LOQ9" \
+  org.label-schema.schema-version="1.0"
+
+ADD release/windows/amd64/drone-nomad.exe C:/bin/drone-nomad.exe
+ENTRYPOINT [ "C:\\bin\\drone-nomad.exe" ]

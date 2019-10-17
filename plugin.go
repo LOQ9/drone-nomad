@@ -76,9 +76,16 @@ func (p Plugin) Exec() error {
 	}
 
 	// Perform substitions
-	nomadTemplateSubst, err := envsubst.EvalEnv(
+	//nomadTemplateSubst, err := envsubst.EvalEnv(
+	//	string(nomadTemplateFile),
+	//)
+	nomadTemplateSubst, err := p.replaceEnv(
 		string(nomadTemplateFile),
 	)
+
+	if err != nil {
+		return err
+	}
 
 	// Parse template
 	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
@@ -112,7 +119,6 @@ func (p Plugin) Exec() error {
 }
 
 // replaceEnv env changes vars from template
-/*
 func (p Plugin) replaceEnv(template string) (string, error) {
 	names := map[string]bool{}
 
@@ -127,4 +133,3 @@ func (p Plugin) replaceEnv(template string) (string, error) {
 
 	return template, nil
 }
-*/

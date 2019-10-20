@@ -148,8 +148,8 @@ func (p Plugin) replaceEnv(template string) (string, error) {
 
 		// Check if var exists
 		if _, ok := templateVars[key]; !ok {
-			// When using vars on Nomad we don't want to mess it up
-			// Ideally we wouldn't modify this, but since this requires a return string...
+			// When using vars on Nomad Templates we don't want to mess it up with it
+			// Ideally we wouldn't modify this, but since this function requires to return a string
 			return fmt.Sprintf("${%s}", key)
 		}
 

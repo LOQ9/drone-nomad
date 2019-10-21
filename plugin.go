@@ -81,8 +81,6 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
-	fmt.Println(nomadTemplateSubst)
-
 	// Parse template
 	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
 

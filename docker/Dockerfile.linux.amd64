@@ -5,5 +5,5 @@ LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
   org.label-schema.vendor="LOQ9" \
   org.label-schema.schema-version="1.0"
 
-ADD release/linux/amd64/drone-nomad /bin/
+ADD build/linux/amd64/drone-nomad /bin/
 ENTRYPOINT ["/bin/drone-nomad"]

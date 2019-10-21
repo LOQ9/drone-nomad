@@ -6,5 +6,5 @@ LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
   org.label-schema.vendor="LOQ9" \
   org.label-schema.schema-version="1.0"
 
-ADD release/windows/amd64/drone-windows.exe C:/bin/drone-windows.exe
+ADD build/windows/amd64/drone-windows.exe C:/bin/drone-windows.exe
 ENTRYPOINT [ "C:\\bin\\drone-windows.exe" ]

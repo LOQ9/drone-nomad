@@ -34,3 +34,29 @@ docker run --rm \
   -w $(pwd) \
   plugins/nomad
 ```
+
+## Template Variables
+
+The following variables could be configured on a nomad template with the following syntax `$(PLUGIN_ADDR)`.
+
+| Variable | Description |
+|---|---|
+| PLUGIN_ADDR | nomad addr |
+| PLUGIN_TOKEN | nomad token |
+| PLUGIN_REGION | nomad region |
+| PLUGIN_TEMPLATE | nomad template |
+| DRONE_REPO_OWNER | repository owner |
+| DRONE_REPO_NAME | repository name |
+| DRONE_COMMIT_SHA | git commit sha |
+| DRONE_COMMIT_REF | git commit ref |
+| DRONE_COMMIT_BRANCH | git commit branch |
+| DRONE_COMMIT_AUTHOR | git author name |
+| DRONE_COMMIT_MESSAGE | commit message |
+| DRONE_BUILD_EVENT | build event |
+| DRONE_BUILD_NUMBER | build number |
+| DRONE_BUILD_STATUS | build status |
+| DRONE_BUILD_LINK | build link |
+| DRONE_BUILD_STARTED | build started |
+| DRONE_BUILD_CREATED | build created |
+| DRONE_TAG | build tag |
+| DRONE_JOB_STARTED | job started |

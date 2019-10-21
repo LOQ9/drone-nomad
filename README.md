@@ -37,7 +37,7 @@ docker run --rm \
 
 ## Template Variables
 
-The following variables could be configured on a nomad template with the following syntax `$(PLUGIN_ADDR)`.
+The following variables could be configured on a nomad template with the following syntax `${VAR_NAME}`.
 
 | Variable | Description |
 |---|---|

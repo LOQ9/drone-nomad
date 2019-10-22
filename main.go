@@ -36,6 +36,11 @@ func main() {
 			EnvVar: "PLUGIN_REGION",
 		},
 		cli.StringFlag{
+			Name:   "namespace",
+			Usage:  "nomad namespace",
+			EnvVar: "PLUGIN_NAMESPACE",
+		},
+		cli.StringFlag{
 			Name:   "template",
 			Usage:  "nomad template",
 			EnvVar: "PLUGIN_TEMPLATE",
@@ -149,10 +154,11 @@ func run(c *cli.Context) error {
 			Started: c.Int64("job.started"),
 		},
 		Config: Config{
-			Address:  c.String("addr"),
-			Token:    c.String("token"),
-			Region:   c.String("region"),
-			Template: c.String("template"),
+			Address:   c.String("addr"),
+			Token:     c.String("token"),
+			Region:    c.String("region"),
+			Namespace: c.String("namespace"),
+			Template:  c.String("template"),
 		},
 	}
 

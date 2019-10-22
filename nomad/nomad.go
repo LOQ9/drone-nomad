@@ -14,7 +14,19 @@ func New(c *Client) (*Driver, error) {
 
 	// Create a new nomad client config
 	config := api.DefaultConfig()
-	config.Address = c.URL
+	config.Address = c.Address
+
+	if c.Region != "" {
+		config.Region = c.Region
+	}
+
+	if c.Token != "" {
+		config.SecretID = c.Token
+	}
+
+	if c.Namespace != "" {
+		config.Namespace = c.Namespace
+	}
 
 	client, err := api.NewClient(config)
 	if err != nil {

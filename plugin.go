@@ -39,10 +39,11 @@ type (
 
 	// Config ...
 	Config struct {
-		Address  string `json:"address" env:"PLUGIN_ADDR"`
-		Token    string `json:"token" env:"PLUGIN_TOKEN"`
-		Region   string `json:"region" env:"PLUGIN_REGION"`
-		Template string `json:"template" env:"PLUGIN_TEMPLATE"`
+		Address   string `json:"address" env:"PLUGIN_ADDR"`
+		Token     string `json:"token" env:"PLUGIN_TOKEN"`
+		Region    string `json:"region" env:"PLUGIN_REGION"`
+		Namespace string `json:"namespace" env:"PLUGIN_NAMESPACE"`
+		Template  string `json:"template" env:"PLUGIN_TEMPLATE"`
 	}
 
 	// Plugin ...
@@ -59,7 +60,10 @@ func (p Plugin) Exec() error {
 
 	// Connect to Nomad
 	nomad, err := nomad.New(&nomad.Client{
-		URL: p.Config.Address,
+		Address:   p.Config.Address,
+		Region:    p.Config.Region,
+		Namespace: p.Config.Namespace,
+		Token:     p.Config.Token,
 	})
 
 	if err != nil {

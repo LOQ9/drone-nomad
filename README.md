@@ -32,7 +32,7 @@ docker build \
 docker run --rm \
   -v $(pwd):$(pwd) \
   -w $(pwd) \
-  plugins/nomad
+  plugins/drone-nomad
 ```
 
 ## Template Variables
@@ -44,6 +44,7 @@ The following variables could be configured on a nomad template with the followi
 | PLUGIN_ADDR | nomad addr |
 | PLUGIN_TOKEN | nomad token |
 | PLUGIN_REGION | nomad region |
+| PLUGIN_NAMESPACE | nomad namespace |
 | PLUGIN_TEMPLATE | nomad template |
 | DRONE_REPO_OWNER | repository owner |
 | DRONE_REPO_NAME | repository name |

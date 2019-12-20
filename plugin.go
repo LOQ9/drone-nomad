@@ -80,31 +80,22 @@ func (p Plugin) Exec() error {
 	}
 
 	// Perform substitions
-	nomadTemplateSubst, err := p.replaceEnv(
-		string(nomadTemplateFile),
-	)
-
-	if err != nil {
-		return err
-	}
+	nomadTemplateSubst := p.replaceEnv(string(nomadTemplateFile))
 
 	// Parse template
 	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
-
 	if err != nil {
 		return err
 	}
 
 	// Plan deployment
 	_, err = nomad.PlanJob(nomadTemplate)
-
 	if err != nil {
 		return err
 	}
 
 	// Launch deployment
 	nomadJob, err := nomad.RegisterJob(nomadTemplate)
-
 	if err != nil {
 		return err
 	}
@@ -143,7 +134,7 @@ func (p Plugin) envMap() []string {
 }
 
 // replaceEnv changes vars from template
-func (p Plugin) replaceEnv(template string) (string, error) {
+func (p Plugin) replaceEnv(template string) string {
 
 	// Get current passed vars
 	templateVars := p.envMap()
@@ -170,5 +161,5 @@ func (p Plugin) replaceEnv(template string) (string, error) {
 		return s
 	})
 
-	return template, nil
+	return template
 }

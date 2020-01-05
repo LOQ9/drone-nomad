@@ -1,12 +1,15 @@
 package main
 
 import (
-	"drone-nomad/nomad"
 	"fmt"
 	"io/ioutil"
 	"reflect"
+	"regexp"
+	"strings"
 
 	"github.com/drone/envsubst"
+
+	"drone-nomad/nomad"
 )
 
 type (
@@ -77,31 +80,22 @@ func (p Plugin) Exec() error {
 	}
 
 	// Perform substitions
-	nomadTemplateSubst, err := p.replaceEnv(
-		string(nomadTemplateFile),
-	)
-
-	if err != nil {
-		return err
-	}
+	nomadTemplateSubst := p.replaceEnv(string(nomadTemplateFile))
 
 	// Parse template
 	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
-
 	if err != nil {
 		return err
 	}
 
 	// Plan deployment
 	_, err = nomad.PlanJob(nomadTemplate)
-
 	if err != nil {
 		return err
 	}
 
 	// Launch deployment
 	nomadJob, err := nomad.RegisterJob(nomadTemplate)
-
 	if err != nil {
 		return err
 	}
@@ -116,8 +110,8 @@ func (p Plugin) Exec() error {
 	return nil
 }
 
-func (p Plugin) envMap() map[string]interface{} {
-	structVal := make(map[string]interface{}, 0)
+func (p Plugin) envMap() []string {
+	structVal := make([]string, 0)
 	u := reflect.ValueOf(p)
 
 	for k := 0; k < u.NumField(); k++ {
@@ -131,7 +125,7 @@ func (p Plugin) envMap() map[string]interface{} {
 
 			f := reflect.Indirect(field).FieldByName(fieldName)
 			if f.IsValid() {
-				structVal[fieldTag] = f.Interface()
+				structVal = append(structVal,fieldTag)
 			}
 		}
 	}
@@ -140,28 +134,32 @@ func (p Plugin) envMap() map[string]interface{} {
 }
 
 // replaceEnv changes vars from template
-func (p Plugin) replaceEnv(template string) (string, error) {
+func (p Plugin) replaceEnv(template string) string {
 
 	// Get current passed vars
 	templateVars := p.envMap()
 
-	// Invoke the envsubst to replace template vars with args/env vars
-	template, err := envsubst.Eval(template, func(key string) string {
+	// regular expression matching var expression ${...}
+	reVars := regexp.MustCompile(`(?m)\$\{(.+?)\}`)
 
-		// Check if var exists
-		if _, ok := templateVars[key]; !ok {
-			// When using vars on Nomad Templates we don't want to mess it up with it
-			// Ideally we wouldn't modify this, but since this function requires to return a string
-			return fmt.Sprintf("${%s}", key)
+	// replace all matches of regular expression and check if it can be replaced
+	template = reVars.ReplaceAllStringFunc(template, func(s string) string {
+		// find the exact var name inside match, e.g. ${DRONE_TAG=latest} becomes "DRONE_TAG=latest"
+		matches := reVars.FindStringSubmatch(s)
+		// loop over our known template vars if the can be replaced, otherwise return the original string
+		for i := range templateVars {
+			// check if the found var starts with one of our known vars
+			if strings.Index(matches[1], templateVars[i])==0 {
+				subst, err := envsubst.EvalEnv(s)
+				if err != nil {
+					return s
+				}
+				return subst
+			}
 		}
 
-		// Send the variable with replaced content
-		return fmt.Sprintf("%v", templateVars[key])
+		return s
 	})
 
-	if err != nil {
-		return "", err
-	}
-
-	return template, nil
+	return template
 }

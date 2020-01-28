@@ -47,6 +47,7 @@ type (
 		Region    string `json:"region" env:"PLUGIN_REGION"`
 		Namespace string `json:"namespace" env:"PLUGIN_NAMESPACE"`
 		Template  string `json:"template" env:"PLUGIN_TEMPLATE"`
+		Debug     bool   `json:"debug" env:"PLUGIN_DEBUG"`
 	}
 
 	// Plugin ...
@@ -88,6 +89,11 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
+	// Log template to STDOUT when debugging is enabled
+	if p.Config.Debug {
+		fmt.Println(nomadTemplateSubst)
+	}
+
 	// Plan deployment
 	_, err = nomad.PlanJob(nomadTemplate)
 	if err != nil {
@@ -125,7 +131,7 @@ func (p Plugin) envMap() []string {
 
 			f := reflect.Indirect(field).FieldByName(fieldName)
 			if f.IsValid() {
-				structVal = append(structVal,fieldTag)
+				structVal = append(structVal, fieldTag)
 			}
 		}
 	}
@@ -149,7 +155,7 @@ func (p Plugin) replaceEnv(template string) string {
 		// loop over our known template vars if the can be replaced, otherwise return the original string
 		for i := range templateVars {
 			// check if the found var starts with one of our known vars
-			if strings.Index(matches[1], templateVars[i])==0 {
+			if strings.Index(matches[1], templateVars[i]) == 0 {
 				subst, err := envsubst.EvalEnv(s)
 				if err != nil {
 					return s

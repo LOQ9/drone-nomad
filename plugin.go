@@ -145,16 +145,32 @@ func (p Plugin) replaceEnv(template string) string {
 	// Get current passed vars
 	templateVars := p.envMap()
 
-	// regular expression matching var expression ${...}
+	// Regular expression matching var expression ${...}
 	reVars := regexp.MustCompile(`(?m)\$\{(.+?)\}`)
 
-	// replace all matches of regular expression and check if it can be replaced
+	// Replace all matches of regular expression and check if it can be replaced
 	template = reVars.ReplaceAllStringFunc(template, func(s string) string {
-		// find the exact var name inside match, e.g. ${DRONE_TAG=latest} becomes "DRONE_TAG=latest"
+		// Find the exact var name inside match, e.g. ${DRONE_TAG=latest} becomes "DRONE_TAG=latest"
 		matches := reVars.FindStringSubmatch(s)
-		// loop over our known template vars if the can be replaced, otherwise return the original string
+
+		// Check string sufix
+		if strings.HasSuffix(matches[1], "_SANITIZE") {
+			// Get var content
+			subst, err := envsubst.EvalEnv(s)
+			if err != nil {
+				return s
+			}
+
+			r, _ := regexp.Compile(`[^a-z0-9]`)
+			replacedString := r.ReplaceAllString(strings.ToLower(subst), "-")
+
+			return replacedString
+		}
+
+		// Loop over our known template vars if they can be replaced, otherwise return the original string
 		for i := range templateVars {
-			// check if the found var starts with one of our known vars
+
+			// Check if the found var starts with one of our known vars
 			if strings.Index(matches[1], templateVars[i]) == 0 {
 				subst, err := envsubst.EvalEnv(s)
 				if err != nil {

@@ -51,6 +51,11 @@ func main() {
 			EnvVar: "PLUGIN_DEBUG",
 		},
 		cli.StringFlag{
+			Name:   "dry_run",
+			Usage:  "nomad dry run",
+			EnvVar: "PLUGIN_DRY_RUN",
+		},
+		cli.StringFlag{
 			Name:   "repo.owner",
 			Usage:  "repository owner",
 			EnvVar: "DRONE_REPO_OWNER",
@@ -165,6 +170,7 @@ func run(c *cli.Context) error {
 			Namespace: c.String("namespace"),
 			Template:  c.String("template"),
 			Debug:     c.Bool("debug"),
+			DryRun:    c.Bool("dry_run"),
 		},
 	}
 

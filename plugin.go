@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -10,6 +11,11 @@ import (
 	"github.com/drone/envsubst"
 
 	"drone-nomad/nomad"
+)
+
+const (
+	// SanitizeSuffix used when matching vars to sanitize
+	SanitizeSuffix = "_SANITIZE"
 )
 
 type (
@@ -48,6 +54,7 @@ type (
 		Namespace string `json:"namespace" env:"PLUGIN_NAMESPACE"`
 		Template  string `json:"template" env:"PLUGIN_TEMPLATE"`
 		Debug     bool   `json:"debug" env:"PLUGIN_DEBUG"`
+		DryRun    bool   `json:"dry_run" env:"PLUGIN_DRY_RUN"`
 	}
 
 	// Plugin ...
@@ -91,6 +98,7 @@ func (p Plugin) Exec() error {
 
 	// Log template to STDOUT when debugging is enabled
 	if p.Config.Debug {
+		fmt.Println("Nomad template:")
 		fmt.Println(nomadTemplateSubst)
 	}
 
@@ -100,17 +108,19 @@ func (p Plugin) Exec() error {
 		return err
 	}
 
-	// Launch deployment
-	nomadJob, err := nomad.RegisterJob(nomadTemplate)
-	if err != nil {
-		return err
-	}
+	if !p.Config.DryRun {
+		// Launch deployment
+		nomadJob, err := nomad.RegisterJob(nomadTemplate)
+		if err != nil {
+			return err
+		}
 
-	if len(nomadJob.Warnings) > 0 {
-		fmt.Printf("Nomad job deployed with %d warning(s)\n", len(nomadJob.Warnings))
-		fmt.Printf("%s\n", nomadJob.Warnings)
-	} else {
-		fmt.Printf("Nomad job deployed successfuly!\n")
+		if len(nomadJob.Warnings) > 0 {
+			fmt.Printf("Nomad job deployed with %d warning(s)\n", len(nomadJob.Warnings))
+			fmt.Printf("%s\n", nomadJob.Warnings)
+		} else {
+			fmt.Printf("Nomad job deployed successfuly!\n")
+		}
 	}
 
 	return nil
@@ -154,15 +164,20 @@ func (p Plugin) replaceEnv(template string) string {
 		matches := reVars.FindStringSubmatch(s)
 
 		// Check string sufix
-		if strings.HasSuffix(matches[1], "_SANITIZE") {
+		if strings.HasSuffix(matches[1], SanitizeSuffix) {
+
+			// Remove Suffix
+			envName := strings.TrimSuffix(matches[1], SanitizeSuffix)
+
 			// Get var content
-			subst, err := envsubst.EvalEnv(s)
-			if err != nil {
-				return s
-			}
+			envValue := os.Getenv(envName)
 
 			r, _ := regexp.Compile(`[^a-z0-9]`)
-			replacedString := r.ReplaceAllString(strings.ToLower(subst), "-")
+			replacedString := r.ReplaceAllString(strings.ToLower(envValue), "-")
+
+			if p.Config.Debug {
+				fmt.Printf("Replacing (var: %s, value: %s) to %s\n", envName, strings.ToLower(envValue), replacedString)
+			}
 
 			return replacedString
 		}

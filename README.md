@@ -46,6 +46,15 @@ The following variables could be configured on a nomad template with the followi
 | PLUGIN_REGION | nomad region |
 | PLUGIN_NAMESPACE | nomad namespace |
 | PLUGIN_TEMPLATE | nomad template |
+| PLUGIN_TLS_CA_CERT | nomad tls ca certificate file |
+| PLUGIN_TLS_CA_PATH | nomad tls ca certificate file path |
+| PLUGIN_TLS_CA_CERT_PEM | nomad tls ca certificate pem |
+| PLUGIN_TLS_CLIENT_CERT | nomad tls client certificate |
+| PLUGIN_TLS_CLIENT_CERT_PEM | nomad tls client certificate pem |
+| PLUGIN_TLS_CLIENT_KEY | nomad tls client private key |
+| PLUGIN_TLS_CLIENT_KEY_PEM | nomad tls client private key pem |
+| PLUGIN_TLS_SERVERNAME | nomad tls server name |
+| PLUGIN_TLS_INSECURE | nomad tls insecure |
 | DRONE_REPO_OWNER | repository owner |
 | DRONE_REPO_NAME | repository name |
 | DRONE_COMMIT_SHA | git commit sha |

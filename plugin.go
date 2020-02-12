@@ -48,13 +48,22 @@ type (
 
 	// Config ...
 	Config struct {
-		Address   string `json:"address" env:"PLUGIN_ADDR"`
-		Token     string `json:"token" env:"PLUGIN_TOKEN"`
-		Region    string `json:"region" env:"PLUGIN_REGION"`
-		Namespace string `json:"namespace" env:"PLUGIN_NAMESPACE"`
-		Template  string `json:"template" env:"PLUGIN_TEMPLATE"`
-		Debug     bool   `json:"debug" env:"PLUGIN_DEBUG"`
-		DryRun    bool   `json:"dry_run" env:"PLUGIN_DRY_RUN"`
+		Address          string `json:"address" env:"PLUGIN_ADDR"`
+		Token            string `json:"token" env:"PLUGIN_TOKEN"`
+		Region           string `json:"region" env:"PLUGIN_REGION"`
+		Namespace        string `json:"namespace" env:"PLUGIN_NAMESPACE"`
+		Template         string `json:"template" env:"PLUGIN_TEMPLATE"`
+		TLSCACert        string `json:"tls_ca_cert" env:"PLUGIN_TLS_CA_CERT"`
+		TLSCACertPem     string `json:"tls_ca_cert_pem" env:"PLUGIN_TLS_CA_CERT_PEM"`
+		TLSCAPath        string `json:"tls_ca_path" env:"PLUGIN_TLS_CA_PATH"`
+		TLSClientCert    string `json:"tls_client_cert" env:"PLUGIN_TLS_CLIENT_CERT"`
+		TLSClientCertPem string `json:"tls_client_cert_pem" env:"PLUGIN_TLS_CLIENT_CERT_PEM"`
+		TLSClientKey     string `json:"tls_client_key" env:"PLUGIN_TLS_CLIENT_KEY"`
+		TLSClientKeyPem  string `json:"tls_client_key_pem" env:"PLUGIN_TLS_CLIENT_KEY_PEM"`
+		TLSServerName    string `json:"tls_servername" env:"PLUGIN_TLS_SERVERNAME"`
+		TLSInsecure      bool   `json:"tls_insecure" env:"PLUGIN_TLS_INSECURE"`
+		Debug            bool   `json:"debug" env:"PLUGIN_DEBUG"`
+		DryRun           bool   `json:"dry_run" env:"PLUGIN_DRY_RUN"`
 	}
 
 	// Plugin ...
@@ -69,13 +78,26 @@ type (
 // Exec initiates the plugin execution
 func (p Plugin) Exec() error {
 
-	// Connect to Nomad
-	nomad, err := nomad.New(&nomad.Client{
+	nomadClient := &nomad.Client{
 		Address:   p.Config.Address,
 		Region:    p.Config.Region,
 		Namespace: p.Config.Namespace,
 		Token:     p.Config.Token,
-	})
+		TLSConfig: &nomad.ClientTLSConfig{
+			CACert:        p.Config.TLSCACert,
+			CACertPEM:     []byte(p.Config.TLSCACertPem),
+			CAPath:        p.Config.TLSCAPath,
+			ClientCert:    p.Config.TLSClientCert,
+			ClientCertPEM: []byte(p.Config.TLSClientCertPem),
+			ClientKey:     p.Config.TLSClientKey,
+			ClientKeyPEM:  []byte(p.Config.TLSClientKeyPem),
+			TLSServerName: p.Config.TLSServerName,
+			Insecure:      p.Config.TLSInsecure,
+		},
+	}
+
+	// Connect to Nomad
+	nomad, err := nomad.New(nomadClient)
 
 	if err != nil {
 		return err

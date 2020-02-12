@@ -2,6 +2,7 @@ package nomad
 
 import (
 	"github.com/hashicorp/nomad/api"
+	"github.com/ulule/deepcopier"
 )
 
 // Driver is the abstraction for using the nomad driver
@@ -26,6 +27,10 @@ func New(c *Client) (*Driver, error) {
 
 	if c.Namespace != "" {
 		config.Namespace = c.Namespace
+	}
+
+	if c.TLSConfig != nil {
+		deepcopier.Copy(c.TLSConfig).To(config.TLSConfig)
 	}
 
 	client, err := api.NewClient(config)

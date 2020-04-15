@@ -1,4 +1,4 @@
-FROM golang:1.14-buster as build
+FROM golang:1.14-alpine as build
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -19,12 +19,12 @@ ENV CGO_ENABLED 0
 
 RUN go build
 
-FROM gcr.io/distroless/static-debian10:nonroot
+FROM alpine:latest
 
 LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
-    org.label-schema.name="Drone Nomad" \
-    org.label-schema.vendor="LOQ9" \
-    org.label-schema.schema-version="1.0"
+  org.label-schema.name="Drone Nomad" \
+  org.label-schema.vendor="LOQ9" \
+  org.label-schema.schema-version="1.0"
 
 COPY --from=build /app/drone-nomad /bin/drone-nomad
 

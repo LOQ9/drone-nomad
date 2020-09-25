@@ -64,6 +64,7 @@ The following variables could be configured on a nomad template with the followi
 | DRONE_COMMIT_MESSAGE | | commit message |
 | DRONE_BUILD_EVENT | | build event |
 | DRONE_BUILD_NUMBER | | build number |
+| DRONE_BUILD_PARENT | | build parent |
 | DRONE_BUILD_STATUS | | build status |
 | DRONE_BUILD_LINK | | build link |
 | DRONE_BUILD_STARTED | | build started |

@@ -30,6 +30,7 @@ type (
 		Tag     string `json:"tag" env:"DRONE_TAG"`
 		Event   string `json:"event" env:"DRONE_BUILD_EVENT"`
 		Number  int    `json:"number" env:"DRONE_BUILD_NUMBER"`
+		Parent  int    `json:"parent" env:"DRONE_BUILD_PARENT"`
 		Commit  string `json:"commit" env:"DRONE_COMMIT_SHA"`
 		Ref     string `json:"ref" env:"DRONE_COMMIT_REF"`
 		Branch  string `json:"branch" env:"DRONE_COMMIT_BRANCH"`

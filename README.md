@@ -46,6 +46,7 @@ The following variables could be configured on a nomad template with the followi
 | PLUGIN_REGION | | nomad region |
 | PLUGIN_NAMESPACE | | nomad namespace |
 | PLUGIN_TEMPLATE | | nomad template |
+| PLUGIN_PRESERVE_COUNTS | | preserve task counts when deploying (bool) |
 | PLUGIN_TLS_CA_CERT | tls_ca_cert | nomad tls ca certificate file |
 | PLUGIN_TLS_CA_PATH | tls_ca_path | nomad tls ca certificate file path |
 | PLUGIN_TLS_CA_CERT_PEM | tls_ca_cert_pem | nomad tls ca certificate pem |

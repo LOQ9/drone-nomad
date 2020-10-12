@@ -63,6 +63,7 @@ type (
 		TLSClientKeyPem  string `json:"tls_client_key_pem" env:"PLUGIN_TLS_CLIENT_KEY_PEM"`
 		TLSServerName    string `json:"tls_servername" env:"PLUGIN_TLS_SERVERNAME"`
 		TLSInsecure      bool   `json:"tls_insecure" env:"PLUGIN_TLS_INSECURE"`
+		PreserveCounts   bool   `json:"preserve_counts" env:"PLUGIN_PRESERVE_COUNTS"`
 		Debug            bool   `json:"debug" env:"PLUGIN_DEBUG"`
 		DryRun           bool   `json:"dry_run" env:"PLUGIN_DRY_RUN"`
 	}
@@ -133,7 +134,7 @@ func (p Plugin) Exec() error {
 
 	if !p.Config.DryRun {
 		// Launch deployment
-		nomadJob, err := nomad.RegisterJob(nomadTemplate)
+		nomadJob, err := nomad.RegisterJob(nomadTemplate, p.Config.PreserveCounts)
 		if err != nil {
 			return err
 		}

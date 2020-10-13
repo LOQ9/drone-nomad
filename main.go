@@ -45,6 +45,11 @@ func main() {
 			Usage:  "nomad template",
 			EnvVar: "PLUGIN_TEMPLATE",
 		},
+		cli.BoolFlag{
+			Name:   "preserve_counts",
+			Usage:  "nomad preserve_counts",
+			EnvVar: "PLUGIN_PRESERVE_COUNTS",
+		},
 		cli.StringFlag{
 			Name:   "tls_ca_cert",
 			Usage:  "nomad tls ca certificate file",
@@ -220,6 +225,7 @@ func run(c *cli.Context) error {
 			Region:           c.String("region"),
 			Namespace:        c.String("namespace"),
 			Template:         c.String("template"),
+			PreserveCounts:   c.Bool("preserve_counts"),
 			TLSCACert:        c.String("tls_ca_cert"),
 			TLSCAPath:        c.String("tls_ca_path"),
 			TLSCACertPem:     c.String("tls_ca_cert_pem"),

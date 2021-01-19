@@ -1,6 +1,7 @@
 package nomad
 
 import (
+	"errors"
 	"fmt"
 	"github.com/hashicorp/nomad/api"
 	"time"
@@ -41,6 +42,29 @@ func (d *Driver) WatchDeployment(job *api.JobRegisterResponse, timeout time.Dura
 	eval, _, err := d.client.Evaluations().Info(job.EvalID, nil)
 	if err != nil {
 		return err
+	}
+
+	if eval.DeploymentID == "" {
+		// sometimes Nomad initially returns eval
+		// info with an empty deploymentID; and a retry is required in order to get the
+		// updated response from Nomad.
+		evalInfoTimeout := time.NewTicker(time.Second * 60)
+		defer evalInfoTimeout.Stop()
+		for {
+			select {
+			case <-evalInfoTimeout.C:
+				return errors.New("timeout reached on attempting to find deployment ID")
+			default:
+				if eval, _, err = d.client.Evaluations().Info(eval.ID, nil); err != nil {
+					return err
+				}
+				if eval.DeploymentID != "" {
+					break
+				}
+				time.Sleep(time.Second * 2)
+				continue
+			}
+		}
 	}
 
 	timer := time.NewTimer(timeout)

@@ -48,7 +48,7 @@ The following variables could be configured on a nomad template with the followi
 | PLUGIN_TEMPLATE | | nomad template |
 | PLUGIN_PRESERVE_COUNTS | | preserve task counts when deploying (bool) |
 | PLUGIN_WATCH_DEPLOYMENT | | trigger a deploy and wait till the deployment is complete (bool) |
-| PLUGIN_WATCH_DEPLOYMENT_TIMEOUT | | if watch deployment is enabled, wait up to this time duration for the deploy to finish. Errors on timeout. (duration string) |
+| PLUGIN_WATCH_DEPLOYMENT_TIMEOUT | | if watch deployment is enabled, wait up to this time duration for the deploy to finish. Errors on timeout. Default: "5m" (duration string) |
 | PLUGIN_TLS_CA_CERT | tls_ca_cert | nomad tls ca certificate file |
 | PLUGIN_TLS_CA_PATH | tls_ca_path | nomad tls ca certificate file path |
 | PLUGIN_TLS_CA_CERT_PEM | tls_ca_cert_pem | nomad tls ca certificate pem |

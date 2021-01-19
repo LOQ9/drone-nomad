@@ -146,6 +146,9 @@ func (p Plugin) Exec() error {
 			fmt.Printf("Nomad job deployed with %d warning(s)\n", len(nomadJob.Warnings))
 			fmt.Printf("%s\n", nomadJob.Warnings)
 		} else if p.Config.WatchDeployment {
+			if p.Config.WatchDeploymentTimeout == 0 {
+				p.Config.WatchDeploymentTimeout = time.Minute * 5
+			}
 			// block and watch deployment
 			if err = nomad.WatchDeployment(nomadJob, p.Config.WatchDeploymentTimeout); err != nil {
 				return err

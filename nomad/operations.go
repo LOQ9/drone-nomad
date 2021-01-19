@@ -1,7 +1,6 @@
 package nomad
 
 import (
-	"errors"
 	"fmt"
 	"github.com/hashicorp/nomad/api"
 	"time"
@@ -44,36 +43,23 @@ func (d *Driver) WatchDeployment(job *api.JobRegisterResponse, timeout time.Dura
 		return err
 	}
 
-	if eval.DeploymentID == "" {
-		// sometimes Nomad initially returns eval
-		// info with an empty deploymentID; and a retry is required in order to get the
-		// updated response from Nomad.
-		evalInfoTimeout := time.NewTicker(time.Second * 60)
-		defer evalInfoTimeout.Stop()
-		for {
-			select {
-			case <-evalInfoTimeout.C:
-				return errors.New("timeout reached on attempting to find deployment ID")
-			default:
-				if eval, _, err = d.client.Evaluations().Info(eval.ID, nil); err != nil {
-					return err
-				}
-				if eval.DeploymentID != "" {
-					break
-				}
-				time.Sleep(time.Second * 2)
-				continue
-			}
+	deploymentID := eval.DeploymentID
+	fmt.Printf("Nomad job deployment started. Eval ID: %s. Waiting for deploy ID assignment\n", eval.ID)
+	if deploymentID == "" {
+		deploymentID, err = d.getDeploymentIDForEval(eval)
+		if err != nil {
+			return err
 		}
 	}
 
+	fmt.Printf("Nomad job deployment started. Deployment ID: %s. Waiting for deploy to finish\n", deploymentID)
 	timer := time.NewTimer(timeout)
 	for {
 		select {
 		case <-timer.C:
-			return fmt.Errorf("deployment watcher timedout. Deployment: %s", eval.DeploymentID)
+			return fmt.Errorf("deployment watcher timedout. Deployment: %s", deploymentID)
 		default:
-			deployment, _, err := d.client.Deployments().Info(eval.DeploymentID, nil)
+			deployment, _, err := d.client.Deployments().Info(deploymentID, nil)
 			if err != nil {
 				return err
 			}
@@ -83,8 +69,32 @@ func (d *Driver) WatchDeployment(job *api.JobRegisterResponse, timeout time.Dura
 			case "running":
 				time.Sleep(time.Second * 5)
 			default:
-				return fmt.Errorf("deployment: %s failed. Status: %s : %s", eval.DeploymentID, deployment.Status, deployment.StatusDescription)
+				return fmt.Errorf("deployment: %s failed. Status: %s : %s", deploymentID, deployment.Status, deployment.StatusDescription)
 			}
+		}
+	}
+}
+
+func (d *Driver) getDeploymentIDForEval(eval *api.Evaluation) (string, error) {
+	// sometimes Nomad initially returns eval
+	// info with an empty deploymentID; and a retry is required in order to get the
+	// updated response from Nomad.
+	evalInfoTimeout := time.NewTicker(time.Minute * 5)
+	defer evalInfoTimeout.Stop()
+	var err error
+	for {
+		select {
+		case <-evalInfoTimeout.C:
+			return "", fmt.Errorf("timeout reached on attempting to find deployment ID")
+		default:
+			if eval, _, err = d.client.Evaluations().Info(eval.ID, nil); err != nil {
+				return "", err
+			}
+			if eval.DeploymentID != "" {
+				return eval.DeploymentID, nil
+			}
+			time.Sleep(time.Second * 2)
+			continue
 		}
 	}
 }

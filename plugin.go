@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/drone/envsubst"
 
@@ -49,23 +50,25 @@ type (
 
 	// Config ...
 	Config struct {
-		Address          string `json:"address" env:"PLUGIN_ADDR"`
-		Token            string `json:"token" env:"PLUGIN_TOKEN"`
-		Region           string `json:"region" env:"PLUGIN_REGION"`
-		Namespace        string `json:"namespace" env:"PLUGIN_NAMESPACE"`
-		Template         string `json:"template" env:"PLUGIN_TEMPLATE"`
-		TLSCACert        string `json:"tls_ca_cert" env:"PLUGIN_TLS_CA_CERT"`
-		TLSCACertPem     string `json:"tls_ca_cert_pem" env:"PLUGIN_TLS_CA_CERT_PEM"`
-		TLSCAPath        string `json:"tls_ca_path" env:"PLUGIN_TLS_CA_PATH"`
-		TLSClientCert    string `json:"tls_client_cert" env:"PLUGIN_TLS_CLIENT_CERT"`
-		TLSClientCertPem string `json:"tls_client_cert_pem" env:"PLUGIN_TLS_CLIENT_CERT_PEM"`
-		TLSClientKey     string `json:"tls_client_key" env:"PLUGIN_TLS_CLIENT_KEY"`
-		TLSClientKeyPem  string `json:"tls_client_key_pem" env:"PLUGIN_TLS_CLIENT_KEY_PEM"`
-		TLSServerName    string `json:"tls_servername" env:"PLUGIN_TLS_SERVERNAME"`
-		TLSInsecure      bool   `json:"tls_insecure" env:"PLUGIN_TLS_INSECURE"`
-		PreserveCounts   bool   `json:"preserve_counts" env:"PLUGIN_PRESERVE_COUNTS"`
-		Debug            bool   `json:"debug" env:"PLUGIN_DEBUG"`
-		DryRun           bool   `json:"dry_run" env:"PLUGIN_DRY_RUN"`
+		Address                string        `json:"address" env:"PLUGIN_ADDR"`
+		Token                  string        `json:"token" env:"PLUGIN_TOKEN"`
+		Region                 string        `json:"region" env:"PLUGIN_REGION"`
+		Namespace              string        `json:"namespace" env:"PLUGIN_NAMESPACE"`
+		Template               string        `json:"template" env:"PLUGIN_TEMPLATE"`
+		TLSCACert              string        `json:"tls_ca_cert" env:"PLUGIN_TLS_CA_CERT"`
+		TLSCACertPem           string        `json:"tls_ca_cert_pem" env:"PLUGIN_TLS_CA_CERT_PEM"`
+		TLSCAPath              string        `json:"tls_ca_path" env:"PLUGIN_TLS_CA_PATH"`
+		TLSClientCert          string        `json:"tls_client_cert" env:"PLUGIN_TLS_CLIENT_CERT"`
+		TLSClientCertPem       string        `json:"tls_client_cert_pem" env:"PLUGIN_TLS_CLIENT_CERT_PEM"`
+		TLSClientKey           string        `json:"tls_client_key" env:"PLUGIN_TLS_CLIENT_KEY"`
+		TLSClientKeyPem        string        `json:"tls_client_key_pem" env:"PLUGIN_TLS_CLIENT_KEY_PEM"`
+		TLSServerName          string        `json:"tls_servername" env:"PLUGIN_TLS_SERVERNAME"`
+		TLSInsecure            bool          `json:"tls_insecure" env:"PLUGIN_TLS_INSECURE"`
+		PreserveCounts         bool          `json:"preserve_counts" env:"PLUGIN_PRESERVE_COUNTS"`
+		Debug                  bool          `json:"debug" env:"PLUGIN_DEBUG"`
+		DryRun                 bool          `json:"dry_run" env:"PLUGIN_DRY_RUN"`
+		WatchDeployment        bool          `json:"watch_deployment" env:"PLUGIN_WATCH_DEPLOYMENT"`
+		WatchDeploymentTimeout time.Duration `json:"watch_deployment_timeout" env:"PLUGIN_WATCH_DEPLOYMENT_TIMEOUT"`
 	}
 
 	// Plugin ...
@@ -142,6 +145,14 @@ func (p Plugin) Exec() error {
 		if len(nomadJob.Warnings) > 0 {
 			fmt.Printf("Nomad job deployed with %d warning(s)\n", len(nomadJob.Warnings))
 			fmt.Printf("%s\n", nomadJob.Warnings)
+		} else if p.Config.WatchDeployment {
+			if p.Config.WatchDeploymentTimeout == 0 {
+				p.Config.WatchDeploymentTimeout = time.Minute * 5
+			}
+			// block and watch deployment
+			if err = nomad.WatchDeployment(nomadJob, p.Config.WatchDeploymentTimeout); err != nil {
+				return err
+			}
 		} else {
 			fmt.Printf("Nomad job deployed successfuly!\n")
 		}

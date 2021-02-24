@@ -52,6 +52,7 @@ type (
 	Config struct {
 		Address                string        `json:"address" env:"PLUGIN_ADDR"`
 		Token                  string        `json:"token" env:"PLUGIN_TOKEN"`
+		ConsulToken            string        `json:"consul_token" env:"PLUGIN_CONSUL_TOKEN"`
 		Region                 string        `json:"region" env:"PLUGIN_REGION"`
 		Namespace              string        `json:"namespace" env:"PLUGIN_NAMESPACE"`
 		Template               string        `json:"template" env:"PLUGIN_TEMPLATE"`
@@ -121,6 +122,11 @@ func (p Plugin) Exec() error {
 	nomadTemplate, err := nomad.ParseTemplate(nomadTemplateSubst)
 	if err != nil {
 		return err
+	}
+
+	// Set consul ACL token
+	if p.Config.ConsulToken != "" {
+		*nomadTemplate.ConsulToken = p.Config.ConsulToken
 	}
 
 	// Log template to STDOUT when debugging is enabled

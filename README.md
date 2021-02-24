@@ -42,6 +42,7 @@ The following variables could be configured on a nomad template with the followi
 | Environment | Argument | Description |
 |---|---|---|
 | PLUGIN_ADDR | | nomad addr |
+| PLUGIN_CONSUL_TOKEN | | consul token |
 | PLUGIN_TOKEN | | nomad token |
 | PLUGIN_REGION | | nomad region |
 | PLUGIN_NAMESPACE | | nomad namespace |

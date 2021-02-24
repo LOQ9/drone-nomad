@@ -31,6 +31,11 @@ func main() {
 			EnvVar: "PLUGIN_TOKEN",
 		},
 		cli.StringFlag{
+			Name:   "consul_token",
+			Usage:  "consul token",
+			EnvVar: "PLUGIN_CONSUL_TOKEN",
+		},
+		cli.StringFlag{
 			Name:   "region",
 			Usage:  "nomad region",
 			EnvVar: "PLUGIN_REGION",
@@ -232,6 +237,7 @@ func run(c *cli.Context) error {
 		Config: Config{
 			Address:                c.String("addr"),
 			Token:                  c.String("token"),
+			ConsulToken:            c.String("consul_token"),
 			Region:                 c.String("region"),
 			Namespace:              c.String("namespace"),
 			Template:               c.String("template"),

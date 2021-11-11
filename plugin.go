@@ -53,6 +53,7 @@ type (
 		Address                string        `json:"address" env:"PLUGIN_ADDR"`
 		Token                  string        `json:"token" env:"PLUGIN_TOKEN"`
 		ConsulToken            string        `json:"consul_token" env:"PLUGIN_CONSUL_TOKEN"`
+		VaultToken             string        `json:"vault_token" env:"PLUGIN_VAULT_TOKEN"`
 		Region                 string        `json:"region" env:"PLUGIN_REGION"`
 		Namespace              string        `json:"namespace" env:"PLUGIN_NAMESPACE"`
 		Template               string        `json:"template" env:"PLUGIN_TEMPLATE"`
@@ -115,7 +116,7 @@ func (p Plugin) Exec() error {
 		return fmt.Errorf("Could not read nomad template file")
 	}
 
-	// Perform substitions
+	// Perform substitution
 	nomadTemplateSubst := p.replaceEnv(string(nomadTemplateFile))
 
 	// Parse template
@@ -127,6 +128,11 @@ func (p Plugin) Exec() error {
 	// Set consul ACL token
 	if p.Config.ConsulToken != "" {
 		*nomadTemplate.ConsulToken = p.Config.ConsulToken
+	}
+
+	// Set vault ACL token
+	if p.Config.VaultToken != "" {
+		*nomadTemplate.VaultToken = p.Config.VaultToken
 	}
 
 	// Log template to STDOUT when debugging is enabled

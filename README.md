@@ -2,6 +2,8 @@
 
 Drone plugin for deployment with Nomad
 
+![Docker Pulls](https://img.shields.io/docker/pulls/loq9/drone-nomad?label=drone-nomad)
+
 ## Build
 
 Build the binary with the following command:
@@ -43,6 +45,7 @@ The following variables could be configured on a nomad template with the followi
 |---|---|---|
 | PLUGIN_ADDR | | nomad addr |
 | PLUGIN_CONSUL_TOKEN | | consul token |
+| PLUGIN_VAULT_TOKEN | | vault token |
 | PLUGIN_TOKEN | | nomad token |
 | PLUGIN_REGION | | nomad region |
 | PLUGIN_NAMESPACE | | nomad namespace |

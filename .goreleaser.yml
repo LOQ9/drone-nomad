@@ -1,0 +1,27 @@
+project_name: drone-nomad
+builds:
+  -
+    id: "drone-nomad"
+    binary: drone-nomad
+    env: [CGO_ENABLED=0]
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    tags:
+      - netgo
+
+archives:
+  -
+    format: binary
+
+dockers:
+  -
+    id: drone-nomad
+    image_templates:
+    - "ghcr.io/loq9/{{ .ProjectName }}:{{ .Tag }}"
+    - "ghcr.io/loq9/{{ .ProjectName }}:latest"
+    dockerfile: "docker/Dockerfile.minimal"

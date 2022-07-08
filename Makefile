@@ -8,18 +8,18 @@ export CGO_ENABLED=0
 all: build
 
 build:
-	go build -a -tags netgo -o ./build/$(PACKAGE)
+	go build -a -tags netgo -o ./dist/$(PACKAGE)
 
 dep-install:
 	go mod download
 
 build-mac:
 	mkdir -p build/mac
-	env GOOS=darwin GOARCH=amd64 go build -a -tags netgo -o ./build/mac/amd64/$(PACKAGE)
+	env GOOS=darwin GOARCH=amd64 go build -a -tags netgo -o ./dist/$(PACKAGE)_darwin_amd64
 
 build-linux:
 	mkdir -p build/linux
-	env GOOS=linux GOARCH=amd64 go build -a -tags netgo -o ./build/linux/amd64/$(PACKAGE)
+	env GOOS=linux GOARCH=amd64 go build -a -tags netgo -o ./dist/$(PACKAGE)_linux_amd64
 
 lint: check-lint
 	golangci-lint run ./...
@@ -37,7 +37,7 @@ docker:
 	docker build \
 	--label org.label-schema.build-date=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
 	--label org.label-schema.vcs-ref=$(git rev-parse --short HEAD) \
-	--file docker/Dockerfile.linux.amd64 --tag plugins/nomad .
+	--file docker/Dockerfile --tag plugins/nomad .
 
 clean:
-	rm -rf build
+	rm -rf dist

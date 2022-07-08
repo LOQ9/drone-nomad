@@ -22,10 +22,7 @@ go build -v -a -tags netgo -o build/linux/amd64/drone-nomad
 Build the Docker image with the following command:
 
 ```console
-docker build \
-  --label org.label-schema.build-date=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-  --label org.label-schema.vcs-ref=$(git rev-parse --short HEAD) \
-  --file docker/Dockerfile.linux.amd64 --tag plugins/nomad .
+make docker
 ```
 
 ## Usage

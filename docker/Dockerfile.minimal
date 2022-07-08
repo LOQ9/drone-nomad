@@ -1,0 +1,15 @@
+FROM alpine:latest
+
+LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
+  org.label-schema.name="Drone Nomad" \
+  org.label-schema.vendor="LOQ9" \
+  org.label-schema.schema-version="1.0"
+
+RUN apk update && \
+  apk add --no-cache curl ca-certificates && \
+  rm -rf /var/cache/apk/*
+
+ADD drone-nomad /bin/drone-nomad
+RUN chmod u+x /bin/drone-nomad
+
+ENTRYPOINT ["/bin/drone-nomad"]

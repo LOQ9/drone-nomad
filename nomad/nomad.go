@@ -30,7 +30,9 @@ func New(c *Client) (*Driver, error) {
 	}
 
 	if c.TLSConfig != nil {
-		deepcopier.Copy(c.TLSConfig).To(config.TLSConfig)
+		if err := deepcopier.Copy(c.TLSConfig).To(config.TLSConfig); err != nil {
+			return nil, err
+		}
 	}
 
 	client, err := api.NewClient(config)

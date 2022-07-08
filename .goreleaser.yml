@@ -22,6 +22,8 @@ dockers:
   -
     id: drone-nomad
     image_templates:
+    - "docker.io/loq9/{{ .ProjectName }}:{{ .Tag }}"
+    - "docker.io/loq9/{{ .ProjectName }}:latest"
     - "ghcr.io/loq9/{{ .ProjectName }}:{{ .Tag }}"
     - "ghcr.io/loq9/{{ .ProjectName }}:latest"
     dockerfile: "docker/Dockerfile.minimal"

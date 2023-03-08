@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.17
 
 LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
   org.label-schema.name="Drone Nomad" \

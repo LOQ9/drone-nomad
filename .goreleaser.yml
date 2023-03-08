@@ -13,6 +13,11 @@ builds:
       - arm64
     tags:
       - netgo
+    # Custom ldflags templates.
+    ldflags:
+      - -X "main.version={{ .Version }}"
+      - -X "main.commit={{ .Commit }}"
+      - -X "main.date={{ .Date }}"
 
 archives:
   -

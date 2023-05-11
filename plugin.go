@@ -233,12 +233,15 @@ func (p Plugin) replaceEnv(template string) string {
 		for i := range templateVars {
 
 			// Check if the found var starts with one of our known vars
+			// or is an environment variable
 			if strings.Index(matches[1], templateVars[i]) == 0 {
 				subst, err := envsubst.EvalEnv(s)
 				if err != nil {
 					return s
 				}
 				return subst
+			} else if val, ok := os.LookupEnv(matches[1]); ok {
+				return val
 			}
 		}
 

@@ -1,6 +1,6 @@
 module drone-nomad
 
-go 1.20
+go 1.22
 
 require (
 	github.com/drone/envsubst v1.0.3

@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine as build
+FROM golang:1.22-alpine as build
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
@@ -19,7 +19,7 @@ ENV CGO_ENABLED 0
 
 RUN go build
 
-FROM alpine:latest
+FROM alpine:3.19
 
 LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
   org.label-schema.name="Drone Nomad" \

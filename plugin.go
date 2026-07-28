@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"reflect"
 	"regexp"
@@ -111,7 +110,7 @@ func (p Plugin) Exec() error {
 	}
 
 	// Read Template File
-	nomadTemplateFile, err := ioutil.ReadFile(p.Config.Template)
+	nomadTemplateFile, err := os.ReadFile(p.Config.Template)
 	if err != nil {
 		return fmt.Errorf("Could not read nomad template file")
 	}

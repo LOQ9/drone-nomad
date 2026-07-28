@@ -19,7 +19,7 @@ ENV CGO_ENABLED 0
 
 RUN go build
 
-FROM alpine:3.19
+FROM alpine:3.24
 
 LABEL maintainer="Marco Santos <marco.santos@loq9.com>" \
   org.label-schema.name="Drone Nomad" \
